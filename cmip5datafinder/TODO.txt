@@ -1,0 +1,19 @@
+1. implement the correct timeslice handling for synda to reduce the search output only around the year1,year2 given by the filedescriptor
+2. add hostname -f checks inside the code so that it doesn't fail silently when run on a different machine
+3. Bryan's notes from 28 July 2017 (NCAS python technical meeting):
+If the datafinder tool could *also* do the following, it would meet a use case that Gavin Schmidt and I have been talking about for a long time. 
+
+Some kind of additional option like --produce-manifest, that would
+for all the files found, output a manifest of exactly which files were "cached" using their filenmames, tracking_id, and potentially also, their checksum.
+
+The manifest could use the checkm format (or not), we should talk about that and discuss it more widely. If we wanted checksums, we'd probably be better off developing a second tool that could run in parallel to checksum the files used, and add them to the manifest.
+
+But with this in place, we could also run the data finder tool using an argument like --use_manifest=my_manifest.whatever instead of the existing params.txt.
+
+In that case, the data finder tool would attempt to find exactly those files (not necessarily the latest). 
+
+This could be a file that was added to publications and all sorts of things ... and a method for user_a and user_b in different locations to ensure that if they tried to replicate an analysis, they were using exactly the same data.
+
+One gotcha to look out for woudl be the need to cache older versions of files that are already in the cache, and you wouldn't want other users to inadvertently use those ..
+
+Use case provenance: http://home.badc.rl.ac.uk/lawrence/blog/2015/03/02/a_citation_and_provenance_system_for_climate_modelling
