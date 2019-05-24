@@ -1,0 +1,2 @@
+export PATH=/home/users/valeriu/miniconda2Dec2018/bin:$PATH
+export PYTHONPATH=$PYTHONPATH:/home/users/valeriu/cdds_files_May2019/u-ak283_JSON/app/mip_convert/wrapper

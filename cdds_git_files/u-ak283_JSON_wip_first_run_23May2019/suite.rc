@@ -1,0 +1,239 @@
+#!jinja2
+{% set START_DATE = START_YEAR ~ '0101T00Z' %}
+{% set END_DATE = END_YEAR ~ '1230T00Z' %}
+
+[cylc]
+    UTC mode = True
+        
+[scheduling]
+    cycling mode = 360day
+    initial cycle point = {{ START_DATE }}
+    final cycle point = {{ END_DATE }}
+    max active cycle points = 10
+    [[dependencies]]
+{% for STREAM in ACTIVE_STREAMS %} # start loop over #1 streams
+{% set FREQ = CYCLING_FREQUENCIES[STREAM] %}
+
+{% for COMPONENT in STREAM_COMPONENTS[STREAM] %} # start loop #2 over components
+{% set SUFFIX = STREAM ~ '_' ~ COMPONENT %}
+
+    {% if DO_CONVERT_ALIGNMENT_CYCLE[STREAM] %}
+        [[[R1]]]
+            graph = """
+                setup_output_dir_{{STREAM}} => mip_convert_first_{{ SUFFIX }}
+                mip_convert_first_{{ SUFFIX }} => finaliser_{{ STREAM }}
+            """
+
+        [[[R1/^+{{CONVERT_ALIGNMENT_OFFSET[STREAM]}}]]]
+            graph = """
+                setup_output_dir_{{STREAM}}[-{{CONVERT_ALIGNMENT_OFFSET[STREAM]}}] => mip_convert_{{ SUFFIX }}
+            """
+
+    {% else %} # else - if DO_CONVERT_ALIGNMENT
+        [[[R1]]]
+            graph = """
+                    setup_output_dir_{{STREAM}} => mip_convert_{{ SUFFIX }}
+                """
+    {% endif %} # endif - if DO_CONVERT_ALIGNMENT
+
+        [[[R/^+{{CONVERT_ALIGNMENT_OFFSET[STREAM]}}/{{FREQ}}]]]
+            graph = """
+                mip_convert_{{ SUFFIX }} => finaliser_{{ STREAM }}
+            """
+{% endfor %} # end loop #2 over components
+
+    {% if DO_CONVERT_ALIGNMENT_CYCLE[STREAM] %}
+        [[[R1/^+{{CONVERT_ALIGNMENT_OFFSET[STREAM]}}]]]
+            graph = """
+                finaliser_{{STREAM}}[-{{CONVERT_ALIGNMENT_OFFSET[STREAM]}}] => finaliser_{{STREAM}}
+            """
+    {% endif %}
+
+        [[[R/^+{{CONVERT_ALIGNMENT_OFFSET[STREAM]}}/{{FREQ}}]]]
+            graph = """
+                finaliser_{{ STREAM }}[-{{FREQ}}] => finaliser_{{ STREAM }}
+                """
+
+{% if CONCATENATE == "TRUE" %}
+{% if SINGLE_CONCATENATION_CYCLE[STREAM] %}
+        [[[R1/^+{{CONCATENATION_FIRST_CYCLE_OFFSET[STREAM]}}]]]
+{% else %}
+        [[[R/^+{{CONCATENATION_FIRST_CYCLE_OFFSET[STREAM]}}/{{CONCATENATION_WINDOW[STREAM]}}]]]
+{% endif %}
+            graph = """
+                finaliser_{{ STREAM }} =>
+                organise_files_{{ STREAM }} =>
+                mip_concatenate_setup_{{ STREAM }} =>
+                mip_concatenate_batch_{{ STREAM }}
+            """
+
+{% if DO_FINAL_CONCATENATE[STREAM] %}
+        [[[R1/^+{{FINAL_CONCATENATION_CYCLE[STREAM]}}]]]
+            graph = """
+                finaliser_{{ STREAM }} =>
+                organise_files_final_{{ STREAM }} =>
+                mip_concatenate_setup_{{ STREAM }} =>
+                mip_concatenate_batch_{{ STREAM }}
+            """
+{% endif %} # endif CONCATENATE
+{% endif %} # endif DO_FINAL_CONCATENATE
+{% endfor %} # end loop #1 over streams
+
+    [[queues]]
+        [[[default]]]
+            limit = {{ PARALLEL_TASKS }}
+[runtime]
+    [[root]]
+        script = rose task-run --verbose
+        [[[job]]]
+                execution time limit = PT{{WALL_TIME[0]}}H{{WALL_TIME[1]}}M
+        [[[events]]]
+            mail events = submission timeout, execution timeout
+        [[[environment]]]
+            START_YEAR = `cylc cycle-point --print-year`
+            END_YEAR = {{ END_YEAR }}
+
+    [[SPICE]]
+        [[[job]]]
+            batch system = slurm
+        [[[directives]]]
+            --mem={{ MEMORY }}
+            --wckey=CDDS
+            --partition={{OS_PARTITION}}
+    [[LOTUS]]
+        [[[job]]]
+            batch system = lsf
+        [[[directives]]]
+            -q = short-serial
+            -R = "rusage[mem={{ MEMORY }}]"
+            -C = 0
+{% for STREAM in ACTIVE_STREAMS %} # start loop #3 over streams
+    [[MIP_CONVERT_{{STREAM}}]]
+        [[[job]]]
+            execution retry delays = PT1M, PT3M, PT5M
+        [[[environment]]]
+            ROSE_TASK_APP = mip_convert
+
+    [[MIP_CONCATENATE_{{STREAM}}]]
+        [[[job]]]
+            execution retry delays = PT1M, PT3M, PT5M
+        [[[environment]]]
+            NTHREADS = {{ NTHREADS_CONCATENATE }}
+            PROC_DIR = {{ CDDS_CONVERT_PROC_DIR }}
+            TIMESTAMP = `date +%FT%T`
+            TASK_DB_PATH= {{CDDS_CONVERT_PROC_DIR}}/mip_concatenate_{{STREAM}}_${CYLC_TASK_CYCLE_POINT}.db
+            CONCAT_CFG_PATH = {{CDDS_CONVERT_PROC_DIR}}/mip_concatenate_setup_{{STREAM}}_${CYLC_TASK_CYCLE_POINT}.cfg
+
+    [[finaliser_{{ STREAM }}]]
+        script = sleep 1
+
+{% set BASE_OUTPUT = OUTPUT_DIR ~ '/' ~ STREAM  %}
+{% set BASE_MIP_CONVERT = OUTPUT_DIR ~ '/' ~ STREAM ~ '_mip_convert' %}
+{% set BASE_CONCAT = OUTPUT_DIR ~ '/' ~ STREAM ~ '_concat' %}
+
+# Create 3 fresh directories, for mip_convert output, staging the output
+# for concatenation, and concatenation output.
+    [[setup_output_dir_{{ STREAM }}]]
+        script = """
+rm -rf {{ BASE_MIP_CONVERT }}
+mkdir -p {{ BASE_MIP_CONVERT }}
+rm -rf {{ BASE_CONCAT }}
+mkdir -p {{ BASE_CONCAT }}
+rm -rf {{ BASE_OUTPUT }}
+mkdir -p {{ BASE_OUTPUT }}
+"""
+
+    [[ORGANISE_FILES_{{STREAM}}]]
+        inherit = MIP_CONCATENATE_{{STREAM}}, LOTUS
+        [[[environment]]]
+            ROSE_TASK_APP = organise_files
+            SIZING_FILE = {{ SIZING_FILE }}
+            MIP_CONVERT_OUT_DIR = {{ BASE_MIP_CONVERT }}
+            STAGING_DIR = {{ BASE_CONCAT }}
+            OUTPUT_DIR = {{ BASE_OUTPUT }}
+            REF_YEAR = {{ REF_YEAR }}
+            STREAM = {{ STREAM }}
+
+    [[organise_files_{{STREAM}}]]
+        inherit = ORGANISE_FILES_{{STREAM}}
+        [[[environment]]]
+{% if SINGLE_CONCATENATION_CYCLE[STREAM] %}
+            START_YEAR = {{START_YEAR}}
+            END_YEAR = {{END_YEAR}}
+{% else %}
+            START_YEAR = $(rose date --print-format='%Y' $CYLC_TASK_CYCLE_POINT --offset=-{{CONCATENATION_WINDOW[STREAM]}} --offset={{CYCLING_FREQUENCIES[STREAM]}})
+            END_YEAR = $(rose date --print-format='%Y' $CYLC_TASK_CYCLE_POINT --offset={{CYCLING_FREQUENCIES[STREAM]}} --offset=-P1Y)
+{% endif %}
+
+{% if DO_FINAL_CONCATENATE[STREAM] %}
+    [[organise_files_final_{{STREAM}}]]
+        inherit = ORGANISE_FILES_{{STREAM}}
+        [[[environment]]]
+            START_YEAR = {{ FINAL_CONCATENATION_WINDOW_START[STREAM] }}
+            END_YEAR = $(rose date --print-format='%Y' $CYLC_TASK_CYCLE_POINT --offset={{CYCLING_FREQUENCIES[STREAM]}} --offset=-P1Y)
+{% endif %}
+
+    [[mip_concatenate_setup_{{STREAM}}]]
+        inherit = MIP_CONCATENATE_{{STREAM}}, LOTUS
+        [[[environment]]]
+            ROSE_TASK_APP = concatenate_setup
+            STREAM = {{ STREAM }}
+
+    [[mip_concatenate_batch_{{ STREAM }}]]
+        inherit = MIP_CONCATENATE_{{STREAM}}, LOTUS
+	[[[job]]]
+                execution time limit = P2D
+        [[[directives]]]
+            --ntasks={{ NTHREADS_CONCATENATE }}
+	    --qos=long 
+        [[[environment]]]
+            ROSE_TASK_APP = concatenate_batch
+            STREAM = {{ STREAM }}
+{% for COMPONENT in STREAM_COMPONENTS[STREAM] %} # start loop #4 over components
+         {% set SUFFIX = STREAM ~ '_' ~ COMPONENT %}
+
+    [[MIP_CONVERT_{{ SUFFIX  }}]]
+        inherit = MIP_CONVERT_{{STREAM}}, LOTUS
+        [[[environment]]]
+            MIP_CONVERT_CONFIG_DIR = {{ MIP_CONVERT_CONFIG_DIR }}
+            CDDS_CONVERT_PROC_DIR = {{ CDDS_CONVERT_PROC_DIR }}
+            STREAM = {{ STREAM }}
+            COMPONENT = {{ COMPONENT }}
+            INPUT_DIR = {{ INPUT_DIR }}
+            OUTPUT_DIR = {{ BASE_MIP_CONVERT }}/`cylc cycle-point --template=CCYY-MM-DD`
+            STREAM_TIME_OVERRIDES = {{ STREAM_TIME_OVERRIDES[STREAM] }}
+            DUMMY_RUN = {{DUMMY_RUN}}
+	    SUITE_NAME = {{ TARGET_SUITE_NAME }}
+        {% if USE_LOCAL_STORAGE %}
+	        STAGING_DIR=$TMPDIR
+        {% endif %}
+
+    {% if DO_CONVERT_ALIGNMENT_CYCLE[STREAM] %}
+    [[mip_convert_first_{{SUFFIX}}]]
+        inherit = MIP_CONVERT_{{ SUFFIX  }}
+        [[[environment]]]
+            CYCLE_DURATION = {{ CONVERT_ALIGNMENT_OFFSET[STREAM] }}
+
+    {% endif %}
+
+    [[mip_convert_{{SUFFIX}}]]
+        inherit = MIP_CONVERT_{{ SUFFIX  }}
+        [[[environment]]]
+            CYCLE_DURATION = {{ CYCLING_FREQUENCIES[STREAM] }}
+
+{% endfor %} #end loop #4 over components
+{% endfor %} #end loop #3 over streams
+
+[visualization]
+    [[node attributes]]
+{% for STREAM in ACTIVE_STREAMS %} # start loop #5 over streams
+    setup_output_dir_{{STREAM}} = "style=filled", "fillcolor=grey"
+    {% for COMPONENT in STREAM_COMPONENTS[STREAM] %}
+        {% set SUFFIX = STREAM ~ '_' ~ COMPONENT %}
+        mip_convert_{{SUFFIX}} = "style=filled", "fillcolor=red"
+    {% endfor %}
+    finaliser_{{STREAM}} = "style=filled", "fillcolor=yellow"
+    organise_files_{{STREAM}} = "style=filled", "fillcolor=lightblue"
+    mip_concatenate_setup_{{STREAM}} = "style=filled", "fillcolor=blue"
+    mip_concatenate_batch_{{STREAM}} = "style=filled", "fillcolor=green"
+{% endfor %} # end loop #5 over streams
