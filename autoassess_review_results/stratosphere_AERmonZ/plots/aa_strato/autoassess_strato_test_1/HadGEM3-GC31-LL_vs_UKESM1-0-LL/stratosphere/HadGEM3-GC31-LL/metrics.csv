@@ -2,5 +2,18 @@ Polar night jet: northern hem (January),45.447418212890625
 Polar night jet: southern hem (July),112.49552154541016
 Easterly jet: southern hem (January),66.1323471069336
 Easterly jet: northern hem (July),50.65488052368164
+QBO period at 30 hPa,22.0
+QBO amplitude at 30 hPa (westward),21.477857357934923
+QBO amplitude at 30 hPa (eastward),16.56472326051115
+50 hPa temperature: 60N-90N (DJF),29.143453867932436
+50 hPa temperature: 60N-90N (MAM),41.47228676575446
+50 hPa temperature: 90S-60S (JJA),11.946653752566476
+50 hPa temperature: 90S-60S (SON),24.814974401403248
+100 hPa equatorial temp (annual mean),13.878064434290991
+100 hPa equatorial temp (annual cycle strength),1.3550682977409565
+100 hPa 10Sto10N temp (annual mean),14.069743681765885
+100 hPa 10Sto10N temp (annual cycle strength),1.2878170322902633
+70 hPa 10Sto10N wv (annual mean),4.674152942337212
+Summary,10.365042866199142
 RMS error: tropical Age of Air,-10000.0
 RMS error: NH midlatitude Age of Air,-10000.0
