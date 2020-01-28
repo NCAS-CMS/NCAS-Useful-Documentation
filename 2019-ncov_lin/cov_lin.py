@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
+month = "01"
 
 def c_of_d(ys_orig, ys_line):
     """Compute the line R squared."""
@@ -13,9 +14,10 @@ def c_of_d(ys_orig, ys_line):
 
 
 # days in January
-x = [np.float(x) for x in range(16, 27)]
+x = [np.float(x) for x in range(16, 28)]
 # reported number of cases
-y0 = [45., 62., 121., 198., 291., 440., 571., 830., 1287., 1975., 2827.]
+y0 = [45., 62., 121., 198., 291., 440., 571.,
+      830., 1287., 1975., 2827., 4545.]
 
 # natural log of number of reported cases
 y = np.log(y0)
@@ -34,12 +36,13 @@ plot_suptitle = "Linear fit of natural log of cases $N=Ce^{bt}$ with $b=$%.2f da
 plot_title = "Coefficient of determination R=%.3f" % R + "\n" + \
              "Population Doubling time: %.1f days" % d_time + "\n" + \
              "Estimated Daily $R_0=$%.1f" % R0
+plot_name = "2019-ncov_lin_{}-{}-2020.png".format(str(int(x[-1] + 1.)), month)
 
 # plotting
 plt.plot(x, y, 'yo', x, poly1d_fn(x), '--k')
 plt.errorbar(x, y, yerr=yerr, fmt='o', color='r')
 plt.grid()
-plt.xlim(15., 27.)
+plt.xlim(x[0] - 1.5, x[-1] + 1.5)
 plt.ylim(3.5, 10.)
 plt.yticks(y, [np.int(y0) for y0 in y0])
 plt.xlabel("January Date (DD/01/2020)")
@@ -47,4 +50,5 @@ plt.ylabel("Number of 2019-nCov cases on given day DD")
 plt.suptitle("2019-nCoV")
 plt.title(plot_suptitle)
 plt.text(16., 9., plot_title)
+plt.savefig(plot_name)
 plt.show()
