@@ -14,41 +14,67 @@ def c_of_d(ys_orig, ys_line):
 
 
 # days in January
-x = [np.float(x) for x in range(16, 28)]
+x1 = [np.float(x) for x in range(16, 28)]
 # reported number of cases
-y0 = [45., 62., 121., 198., 291., 440., 571.,
-      830., 1287., 1975., 2827., 4545.]
+y01 = [45., 62., 121., 198., 291., 440., 571.,
+      830., 1287., 1975., 2744., 4515., ]
+x2 = [np.float(x) for x in range(27, 33)]
+y02 = [4515., 5974., 7711., 9692., 11791., 14380., ]
+ytot = []
+ytot.extend(y01)
+ytot.extend(y02)
 
 # natural log of number of reported cases
-y = np.log(y0)
+y1 = np.log(y01)
+y2 = np.log(y02)
+ytotlog = np.log(ytot)
 
-coef = np.polyfit(x, y, 1)
-poly1d_fn = np.poly1d(coef)
+coef1 = np.polyfit(x1, y1, 1)
+poly1d_fn1 = np.poly1d(coef1)
+coef2 = np.polyfit(x2, y2, 1)
+poly1d_fn2 = np.poly1d(coef2)
 
-# statistical parameters
-R = c_of_d(y, poly1d_fn(x))  # R squared
-yerr = poly1d_fn(x) - y  # error
-slope = coef[0]  # slope
-d_time = np.log(2.) / slope  # doubling time
-R0 = np.exp(slope) - 1.
+# statistical parameters first line
+R1 = c_of_d(y1, poly1d_fn1(x1))  # R squared
+yerr1 = poly1d_fn1(x1) - y1  # error
+slope1 = coef1[0]  # slope
+d_time1 = np.log(2.) / slope1  # doubling time
+R01 = np.exp(slope1) - 1.
 
-plot_suptitle = "Linear fit of natural log of cases $N=Ce^{bt}$ with $b=$%.2f day$^{-1}$" % slope
-plot_title = "Coefficient of determination R=%.3f" % R + "\n" + \
-             "Population Doubling time: %.1f days" % d_time + "\n" + \
-             "Estimated Daily $R_0=$%.1f" % R0
-plot_name = "2019-ncov_lin_{}-{}-2020.png".format(str(int(x[-1] + 1.)), month)
+# statistical parameters second line
+R2 = c_of_d(y2, poly1d_fn2(x2))  # R squared
+yerr2 = poly1d_fn2(x2) - y2  # error
+slope2 = coef2[0]  # slope
+d_time2 = np.log(2.) / slope2  # doubling time
+R02 = np.exp(slope2) - 1.
+
+plot_suptitle = "Linear fit of " + \
+                "log cases $N=Ce^{bt}$ with " + \
+                "$b=$%.2f day$^{-1}$ (red) and $b=$%.2f day$^{-1}$ (green)" % (slope1, slope2)
+                
+plot_title1 = "Coefficient of determination R=%.3f" % R1 + "\n" + \
+              "Population Doubling time: %.1f days" % d_time1 + "\n" + \
+              "Estimated Daily $R_0=$%.1f" % R01
+plot_title2 = "Coefficient of determination R=%.3f" % R2 + "\n" + \
+              "Population Doubling time: %.1f days" % d_time2 + "\n" + \
+              "Estimated Daily $R_0=$%.1f" % R02
+plot_name = "2019-ncov_lin_{}-{}-2020.png".format(str(int(x1[-1] + 1.)), month)
 
 # plotting
-plt.plot(x, y, 'yo', x, poly1d_fn(x), '--k')
-plt.errorbar(x, y, yerr=yerr, fmt='o', color='r')
+plt.plot(x1, y1, 'yo', x1, poly1d_fn1(x1), '--k')
+plt.errorbar(x1, y1, yerr=yerr1, fmt='o', color='r')
+plt.plot(x2, y2, 'yo', x2, poly1d_fn2(x2), '--k')
+plt.errorbar(x2, y2, yerr=yerr2, fmt='o', color='g')
 plt.grid()
-plt.xlim(x[0] - 1.5, x[-1] + 1.5)
+plt.axvline(27, color='red')
+plt.xlim(x1[0] - 1.5, x2[-1] + 1.5)
 plt.ylim(3.5, 10.)
-plt.yticks(y, [np.int(y0) for y0 in y0])
+plt.yticks(ytotlog, [np.int(y01) for y01 in ytot])
 plt.xlabel("January Date (DD/01/2020)")
 plt.ylabel("Number of 2019-nCov cases on given day DD")
 plt.suptitle("2019-nCoV")
 plt.title(plot_suptitle)
-plt.text(16., 9., plot_title)
+plt.text(16., 9., plot_title1)
+plt.text(16., 7.5, plot_title2)
 plt.savefig(plot_name)
 plt.show()
