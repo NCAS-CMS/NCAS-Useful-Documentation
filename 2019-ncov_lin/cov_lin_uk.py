@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
-month = "01"
+month = "03"
 
 def c_of_d(ys_orig, ys_line):
     """Compute the line R squared."""
@@ -14,10 +14,10 @@ def c_of_d(ys_orig, ys_line):
 
 
 # days in January
-x1 = [np.float(x) for x in range(1, 12)]
+x1 = [np.float(x) for x in range(1, 14)]
 # reported number of cases
 y01 = [35., 40., 51., 85., 114., 160., 206.,
-      271., 321., 373., 460., ]
+      271., 321., 373., 460., 599., 800.]
 #x2 = [np.float(x) for x in range(27, 33)]
 #y02 = [4515., 5974., 7711., 9692., 11791., 14380., ]
 #ytot = []
