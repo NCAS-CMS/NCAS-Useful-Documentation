@@ -16,8 +16,8 @@ Table of Contents
 - Technical paper is now [published](https://www.geosci-model-dev.net/13/1179/2020/) (Yippee Ki Yay, M`****`r!);
 - The other two papers: scientific-diagnostics (review ended), scientific extra-extra (somewhere in the pipes, most
   probably ending review phase);
-- We have a new and improved [Documentation](https://esmvaltool.readthedocs.io/en/latest/) and an every nicer
-  [Website](https://www.esmvaltool.org/);
+- We have a new and improved [Documentation](https://esmvaltool.readthedocs.io/en/latest/) and an ever nicer
+  [Website](https://www.esmvaltool.org/) with a cool [Gallery](https://www.esmvaltool.org/gallery.html);
 - We started working on a dedicated [Tutorial Project](https://github.com/ESMValGroup/tutorial) aiming to
   present users with an easy to deploy and use tutorial (currently WIP);
 - (``more``) Boring stuff:
