@@ -14,13 +14,15 @@ def c_of_d(ys_orig, ys_line):
 
 
 # days in January
-x1 = [np.float(x) for x in range(1, 15)]
+x1 = [np.float(x) for x in range(1, 9)]
 # reported number of cases
-y01 = [35., 40., 51., 85., 114., 160., 206.,
-      271., 321., 373., 460., 599., 800., 1150.]
-x2 = [np.float(x) for x in range(1, 14)]
-y02 = [1577., 1835., 2263., 2706., 3296., 3916., 5061., 6387.,
-       7985., 8514., 10590., 12839., 14955. ]
+# y01 = [35., 40., 51., 85., 114., 160., 206.,
+#      271., 321., 373., 460., 599., 800., 1150.]
+y01 = [206., 271., 321., 373., 460., 599., 800., 1150.]
+x2 = [np.float(x) for x in range(1, 8)]
+# y02 = [1577., 1835., 2263., 2706., 3296., 3916., 5061., 6387.,
+#       7985., 8514., 10590., 12839., 14955. ]
+y02 = [221., 311., 385., 588., 821., 1049., 1577.]
 ytot = []
 ytot.extend(y01)
 ytot.extend(y02)
@@ -61,12 +63,12 @@ plot_title1 = "Coefficient of determination R=%.3f" % R1 + "\n" + \
 plot_title2 = "Coefficient of determination R=%.3f" % R2 + "\n" + \
               "Population Doubling time: %.1f days" % d_time2 + "\n" + \
               "Estimated Daily $R_0=$%.1f" % R02
-plot_name = "2019-ncov_lin_{}-{}-2020_UK-Italy.png".format(str(int(x1[-1] + 1.)), month)
+plot_name = "COV19_LIN_START_{}-{}-2020_UK-Italy.png".format(str(int(x1[-1] + 1.)), month)
 
 # plotting
-plt.plot(x1, y1, 'yo', x1, poly1d_fn1(x1), '--k')
+plt.plot(x1, y1, 'yo', x1, poly1d_fn1(x1), '--r', label="UK")
 plt.errorbar(x1, y1, yerr=yerr1, fmt='o', color='r')
-plt.plot(x2, y2, 'yo', x2, poly1d_fn2(x2), '--k')
+plt.plot(x2, y2, 'yo', x2, poly1d_fn2(x2), '-g', label="Italy")
 plt.errorbar(x2, y2, yerr=yerr2, fmt='o', color='g')
 plt.grid()
 plt.axvline(27, color='red')
@@ -74,11 +76,12 @@ plt.xlim(x1[0] - 1.5, x1[-1] + 1.5)  # x2[-1] + 1.5)
 plt.ylim(2.5, 11.)
 plt.yticks(ytotlog, [np.int(y01) for y01 in ytot])  # ytot])
 # plt.yticks(y2, [np.int(y02) for y02 in y02])
-plt.xlabel("March Date (DD/03/2020)")
-plt.ylabel("Number of 2019-nCov cases on given day DD")
-plt.suptitle("2019-nCoV in UK and Italy starting March 1, 2020")
+plt.xlabel("Synthetic Date (Italy: 24 Feb-1 Mar; UK: 7 Mar-13 Mar")
+plt.ylabel("Number of reported cases on given day DD")
+plt.suptitle("COV-19: epidemic starts in Italy and UK")
 plt.title(plot_suptitle)
-plt.text(2., 5.5, plot_title1)
-plt.text(2., 9., plot_title2)
+plt.text(2., 8.5, plot_title1)
+plt.text(2., 10., plot_title2)
+plt.legend(loc="lower left")
 plt.savefig(plot_name)
 plt.show()
