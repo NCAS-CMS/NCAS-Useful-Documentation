@@ -4,4 +4,5 @@
   - installed anaconda and esmvalcore/tool on home machine;
   - updated environments on Jasmin;
   - fixed a couple tests (one for core and one for tool);
-  - debugged and identified concatenation issue (iris and esmvalcore).
+  - opened two PRs for those;
+  - debugged and identified concatenation issue (MWJury, iris and esmvalcore).
