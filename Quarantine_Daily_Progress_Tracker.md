@@ -12,3 +12,4 @@
   - Cleaned up esmvaltool environment, tested and opened PR
   - Got ICL covid19 code and played a bit with it
   - Created environment and env script for ICL covid19 code for Jasmin
+  - Went grocery shopping
