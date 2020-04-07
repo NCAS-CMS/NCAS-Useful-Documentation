@@ -7,3 +7,8 @@
   - fixed a couple tests (one for core and one for tool);
   - opened two PRs for those;
   - debugged and identified concatenation issue (MWJury, iris and esmvalcore).
+- Tuesday, 7 April:
+  - Fixed esmvaltool environment with netcdf4 for parallel write
+  - Cleaned up esmvaltool environment, tested and opened PR
+  - Got ICL covid19 code and played a bit with it
+  - Created environment and env script for ICL covid19 code for Jasmin
