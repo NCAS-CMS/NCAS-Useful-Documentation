@@ -1,0 +1,6 @@
+name: covid19
+channels:
+  - conda-forge
+dependencies:
+  - cmake
+  - r-base
