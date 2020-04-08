@@ -13,3 +13,9 @@
   - Got ICL covid19 code and played a bit with it
   - Created environment and env script for ICL covid19 code for Jasmin
   - Went grocery shopping
+- Wednesday, 8 April:
+  - installed and created envs for covid19 model on Jasmin (v0.1.0)
+  - tested it with Grenville
+  - fixed a couple PRs in esmvaltool
+  - fixed a couple cdds run params for Jonny
+  - opened iris issue about netcdf parallel write
