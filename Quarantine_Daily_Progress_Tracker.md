@@ -19,3 +19,12 @@
   - fixed a couple PRs in esmvaltool
   - fixed a couple cdds run params for Jonny
   - opened iris issue about netcdf parallel write
+- Tuesday, 14 April:
+  - installed covid=030 on Jasmin;
+  - fixed a bunch of comments for an fx PR in ESMValTool
+  - CMIP6 Archer call + fix a few run params for Jonny;
+  - set up Prepare Deactivate documentation
+- Wednesday, 15 April:
+  - test esmvaltool environment
+  - checked ESMValTool part2 paper
+  - call with Ranjini and Lee talk about upcoming esmvaltool tutorial
