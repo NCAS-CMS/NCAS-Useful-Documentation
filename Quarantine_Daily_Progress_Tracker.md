@@ -28,3 +28,6 @@
   - test esmvaltool environment
   - checked ESMValTool part2 paper
   - call with Ranjini and Lee talk about upcoming esmvaltool tutorial
+- Thursday, 16 April:
+  - reviewed monster diagnostic from Klaus
+  - implemented flexible concatenation with overlaps in ESMValCore
