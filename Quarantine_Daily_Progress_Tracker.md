@@ -31,3 +31,9 @@
 - Thursday, 16 April:
   - reviewed monster diagnostic from Klaus
   - implemented flexible concatenation with overlaps in ESMValCore
+- Monday, 20 April:
+  - looked into and fixed bug preventing Jonny running cdds
+  - fixed volume stats to handle masked arrays (esmvalcore)
+  - written test and fixed cmorization testing module (esmvaltool)
+  - added config user paths for Jasmin (esmvalcore)
+  - attended CMIP6 poster sessions (2h, part 1)
