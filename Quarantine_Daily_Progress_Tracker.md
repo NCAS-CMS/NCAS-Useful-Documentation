@@ -37,3 +37,7 @@
   - written test and fixed cmorization testing module (esmvaltool)
   - added config user paths for Jasmin (esmvalcore)
   - attended CMIP6 poster sessions (2h, part 1)
+- Tuesday, 21 April:
+  - attended CMIP6 rehearsal and poster sessions and gave talk;
+  - fixed volume stats again for nans
+
