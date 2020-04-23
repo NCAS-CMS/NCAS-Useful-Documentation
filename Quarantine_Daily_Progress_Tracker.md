@@ -40,4 +40,11 @@
 - Tuesday, 21 April:
   - attended CMIP6 rehearsal and poster sessions and gave talk;
   - fixed volume stats again for nans
-
+- Wednesday, 22 April:
+  - birthday, general lax
+  - attended UKESM core group meeting and UKESM weekly seminar
+- Thursday, 23 April:
+  - few preparations for tomorrow ESMValTool Tutorial
+  - implemented a fix for computation of variable ctotal(cSoil, cVeg)
+  - general cleanup in esmvaltool/core issues
+  - fixed an isue abt installing esmvalcore on OSX
