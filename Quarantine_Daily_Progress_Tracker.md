@@ -48,3 +48,8 @@
   - implemented a fix for computation of variable ctotal(cSoil, cVeg)
   - general cleanup in esmvaltool/core issues
   - fixed an isue abt installing esmvalcore on OSX
+- Monday, 27 April:
+  - Installed covid070
+  - updated install instructions for esmvaltool
+  - found issue with filing tests (flake8)
+  - pinned flake8 in core and tool
