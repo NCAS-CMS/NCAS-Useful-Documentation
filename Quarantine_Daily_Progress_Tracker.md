@@ -61,3 +61,8 @@
   - took CMIP6-Archer call
   - overhauled the overhaul of concatenation (better streamlined) and tested
   - wrote extra test for above item
+- Wedensday, 29 April:
+  - created modules for covid on Jasmin
+  - fixed a few comments PRs in esmvaltool
+  - went food shopping
+  - wrote a vars/OBS data table in Earth System Model Evaluation Tool (ESMValTool) v2.0 – extended set of large-scale diagnostics for quasi-operational and comprehensive evaluation of Earth system models in CMIP (esmvaltool paper part 2) - bloody long and tedious table!
