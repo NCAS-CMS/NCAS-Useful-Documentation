@@ -66,3 +66,9 @@
   - fixed a few comments PRs in esmvaltool
   - went food shopping
   - wrote a vars/OBS data table in Earth System Model Evaluation Tool (ESMValTool) v2.0 – extended set of large-scale diagnostics for quasi-operational and comprehensive evaluation of Earth system models in CMIP (esmvaltool paper part 2) - bloody long and tedious table!
+- Thursday, 30 April:
+  - fixed long lasting issue with NE files shape selection
+  - found a bug and fixed while in that process
+  - 2 x PRs
+  - made the covid modules more secure at Grenville suggestion (no more module load
+    from module script)
