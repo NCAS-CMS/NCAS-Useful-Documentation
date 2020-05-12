@@ -72,3 +72,7 @@
   - 2 x PRs
   - made the covid modules more secure at Grenville suggestion (no more module load
     from module script)
+- Monday, 11 May
+  - ESMValTool tutorial (16 people, virtual)
+- Tuesday, 12 May
+  - Work on Ed Hawkins ACSIS branch in ESMValTool
